@@ -1,27 +1,24 @@
 import React, { useEffect, useState } from "react";
-import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { register } from "./api/apiConfigeration";
 import { userTokencheck } from "./Hooks/userTokenCheck";
 import { toast } from "react-toastify";
-import Spinner from "./Spinner";
 
 const Register = () => {
   const [togglepassword, setTogglePassword] = useState(false);
   const [username, setuserName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setemail] = useState("");
-  const [LogoFile, setLogofile] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const data = userTokencheck();
   const [direction, setDirection] = useState(false);
-  const [loading, setLaoding] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    document.title = "user- sign up";
+    document.title = "User Sign Up";
   }, []);
 
   if (!!data && location.pathname === "/register") {
@@ -31,16 +28,17 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
     if (!username) {
-      toast("fill user name");
+      toast.warn("Please enter a username.");
       return;
     }
     if (!email) {
-      toast("fill your email !");
+      toast.warn("Please enter your email.");
       return;
     }
     if (!password) {
-      toast("fill your Password");
+      toast.warn("Please enter your password.");
       return;
     }
 
@@ -48,168 +46,100 @@ const Register = () => {
     formData.append("username", username);
     formData.append("password", password);
     formData.append("email", email);
-    if (LogoFile) {
-      formData.append("logo", LogoFile);
-    } else {
-      console.error("Logo file is not valid");
-    }
 
     try {
-      setLaoding(true);
+      setLoading(true);
       const response = await register(formData);
       if (!response.success) {
-        setLaoding(false);
-        toast(response?.message);
+        setLoading(false);
+        toast.error(response?.message);
         return;
       }
       if (response.success) {
-        setLaoding(false);
+        setLoading(false);
         toast.success(response?.message);
         navigate("/login");
-        return;
       }
     } catch (error) {
-      console.log("error while regitration form !", error);
-      setLaoding(false);
+      console.error("Registration error:", error);
+      toast.error("Something went wrong!");
     } finally {
-      setLaoding(false);
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full h-full -z-10  sm:hidden">
-        <video
-          autoPlay
-          loop
-          muted
-          className="w-full h-screen object-cover"
-          playsInline
-          preload="auto"
-        >
-          <source
-            src="https://media.istockphoto.com/id/538615824/video/4k-login-page.mp4?s=mp4-640x640-is&k=20&c=i3P_r_fkI_jr0IGxKsc40I4bgoR2w_KLQLMOmKdVeS0="
-            type="video/mp4"
-          />
-          Your browser does not support the video tag.
-        </video>
-      </div>
-      {direction ? null : (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="flex flex-col md:flex-row w-full max-w-7xl sm:bg-white p-8 rounded-xl">
-            <div className="flex-1 hidden md:block">
-              <img
-                src="/loginAllustration.avif"
-                alt="Register Illustration"
-                className="w-full h-full object-cover rounded-lg"
-              />
-            </div>
-            <div className="flex-1 md:mt-10 mb-32">
-              <div className=" text-center">
-                <label htmlFor="input" className="cursor-pointer">
-                  <input
-                    id="input"
-                    onChange={(e) => setLogofile(e.target.files[0])}
-                    type="file"
-                    name="logo"
-                    hidden
-                  />
-                  {!!LogoFile ? (
-                    <div className="rounded-full flex justify-center  overflow-hidden mx-auto p-1 mt-16">
-                      <img
-                        className="object-cover w-12 h-12 border-2 p-1 rounded-full  bg-green-100 shadow-md shadow-green-400"
-                        src={URL.createObjectURL(LogoFile)}
-                        alt="Logo"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex justify-center ">
-                      <img
-                        src="/logicon.jpg"
-                        alt=""
-                        className="size-10 object-cover border-2 p-1 
-                          rounded-full bg-green-100 shadow-md shadow-green-400"
-                      />
-                    </div>
-                  )}
-                </label>
-              </div>
+      {!direction && (
+        <div className="min-h-screen flex items-center justify-center px-1 -mt-8 sm:mt-7">
+          <div className="flex flex-col md:flex-row w-full max-w-5xl backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-gray-800 animate-fadeIn">
+            {/* Left Side Image - hidden on mobile */}
+            <div
+              className="hidden md:flex w-full md:w-1/2 relative contrast-100 hover:contrast-150 items-center justify-center bg-cover bg-center h-64 md:h-auto"
+              style={{
+                backgroundImage: "url('/homsectionimage.png')",
+              }}
+            ></div>
 
-              <h2 className="md:text-2xl  text-center text-md text-rose-500 font-serif mt-3 mb-0 ">
-                Register
+            {/* Right Side Form */}
+            <div className="flex-1 p-4 text-white bg-gradient-to-r from-gray-900 via-black brightness-95 hover:brightness-110 to-black rounded-r-2xl">
+              <h2 className="text-4xl text-center font-extrabold mb-8 bg-gradient-to-r from-pink-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent tracking-tight">
+                Create Your Account
               </h2>
-              <form onSubmit={handleRegister}>
-                <div className="mb-4">
-                  <label
-                    className="block text-slate-900 text-sm  mb-2 font-serif "
-                    htmlFor="username"
-                  >
-                    Username
-                  </label>
+
+              <form onSubmit={handleRegister} className="space-y-6">
+                <div>
+                  <label className="text-sm font-medium">Username</label>
                   <input
-                    onChange={(e) => setuserName(e.target.value)}
-                    className="w-full p-3 outline-none bg-slate-200 rounded-tl-xl font-serif
-                     "
-                    id="username"
                     type="text"
-                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setuserName(e.target.value)}
+                    placeholder="Enter username"
+                    className="w-full p-3 mt-1 bg-zinc-900 text-white border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all hover:ring-2 hover:ring-pink-500"
                   />
                 </div>
 
-                <div className="mb-4">
-                  <label
-                    className="block text-slate-900 text-sm  mb-2 font-serif "
-                    htmlFor="email"
-                  >
-                    Email
-                  </label>
+                <div>
+                  <label className="text-sm font-medium">Email</label>
                   <input
-                    onChange={(e) => setemail(e.target.value)}
-                    className="w-full p-3 outline-none bg-slate-200 rounded-tl-xl font-serif"
-                    id="email"
                     type="email"
-                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setemail(e.target.value)}
+                    placeholder="Enter email"
+                    className="w-full p-3 mt-1 bg-zinc-900 text-white border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all hover:ring-2 hover:ring-pink-500"
                   />
                 </div>
-                <div className="mb-6 relative">
-                  <label
-                    className="block text-slate-900 text-sm  mb-2 font-serif "
-                    htmlFor="password"
-                  >
-                    Password
-                  </label>
-                  <input
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-3 outline-none bg-slate-200 rounded-tl-xl font-serif"
-                    id="password"
-                    type={togglepassword ? "text" : "password"}
-                    placeholder="Password"
-                  />
 
+                <div className="relative">
+                  <label className="text-sm font-medium">Password</label>
+                  <input
+                    type={togglepassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full p-3 mt-1 bg-zinc-900 text-white border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all hover:ring-2 hover:ring-pink-500"
+                  />
                   {togglepassword ? (
                     <RemoveRedEyeIcon
-                      fontSize="medium"
                       onClick={() => setTogglePassword(!togglepassword)}
-                      className="absolute right-4 top-[50px] transform -translate-y-1/2 cursor-pointer text-gray-500"
+                      className="absolute top-[47px] right-4 cursor-pointer text-gray-400"
                     />
                   ) : (
                     <VisibilityOffIcon
-                      fontSize="medium"
                       onClick={() => setTogglePassword(!togglepassword)}
-                      className="absolute right-4 top-[50px] transform -translate-y-1/2 cursor-pointer text-gray-500"
+                      className="absolute top-[47px] right-4 cursor-pointer text-gray-400"
                     />
                   )}
-                  <span className="text-red-400 text-xs ml-3"></span>
                 </div>
 
                 <button
                   type="submit"
-                  className="bg-rose-700 text-white w-full flex justify-center items-center p-2 rounded-lg"
+                  className="w-full bg-gradient-to-r from-pink-600 via-yellow-500 to-orange-500 text-white py-3 rounded-lg text-lg font-semibold hover:scale-105 hover:opacity-95 transition duration-300"
                 >
                   {loading ? (
-                    <div className="flex gap-2 items-center">
-                      Wait..
-                      <div className="size-4 animate-spin rounded-full  border-b-2 border-t-2"></div>{" "}
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Registering...
                     </div>
                   ) : (
                     "Register"
@@ -217,17 +147,15 @@ const Register = () => {
                 </button>
               </form>
 
-              <div className="mt-6 text-center">
-                <p className="text-gray-600 font-serif text-sm">
-                  Already have an account?{" "}
-                  <Link
-                    to="/login"
-                    className="text-blue-500 hover:text-blue-700 font-semibold"
-                  >
-                    Login here
-                  </Link>
-                </p>
-              </div>
+              <p className="text-center text-sm text-gray-400 mt-6">
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="text-blue-400 hover:underline hover:text-blue-500"
+                >
+                  Login here
+                </Link>
+              </p>
             </div>
           </div>
         </div>

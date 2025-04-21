@@ -19,25 +19,26 @@ const Login = () => {
   const { loading } = useSelector((state) => state.auth);
   const location = useLocation();
   const data = userTokencheck();
-
   const [direction, setRedirection] = useState(false);
+
   useEffect(() => {
-    document.title = "user- login";
+    document.title = "User Login";
   }, []);
 
   const HandleLogin = async (e) => {
+    e.preventDefault();
+
     if (!email) {
-      toast?.warn("Fill Your userEmail");
+      toast.warn("Please enter your email.");
       return;
     }
     if (!password) {
-      toast?.warn("Fill Your Password");
+      toast.warn("Please enter your password.");
       return;
     }
 
     dispatch(setLoading(true));
 
-    e.preventDefault();
     const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
@@ -46,17 +47,17 @@ const Login = () => {
       const response = await loginFunc(formData);
       if (response.success) {
         dispatch(setLoading(false));
-        toast(response.message);
-        navigate("/");
-        console.log(response);
+        toast.success(response.message);
         dispatch(login(response.user));
         dispatch(userLogoUpdate(response.user?.image));
+        navigate("/");
       } else {
-        toast(response.message);
+        toast.error(response.message);
         dispatch(setLoading(false));
       }
     } catch (error) {
-      console.log("Error while submitting form data", error);
+      toast.error("Something went wrong during login.");
+      console.error("Login error:", error);
     } finally {
       dispatch(setLoading(false));
     }
@@ -69,100 +70,74 @@ const Login = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full h-full -z-10">
-        <video
-          autoPlay
-          loop
-          muted
-          className="w-full h-screen object-cover"
-          playsInline
-          preload="auto"
-        >
-          <source
-            src="https://media.istockphoto.com/id/538615824/video/4k-login-page.mp4?s=mp4-640x640-is&k=20&c=i3P_r_fkI_jr0IGxKsc40I4bgoR2w_KLQLMOmKdVeS0="
-            type="video/mp4"
-          />
-          Your browser does not support the video tag.
-        </video>
-      </div>
-      {direction ? null : (
-        <div className="min-h-screen -mt-16  flex items-center justify-center">
-          <div className=" p-6 rounded-lg w-full max-w-md">
-            <h2 className="text-2xl font-serif text-center text-rose-600 ">
-              Login
+      {!direction && (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black px-4">
+          <div className="w-full max-w-md p-8 bg-[#1a1a1a]/90 border border-gray-800 rounded-2xl backdrop-blur-md shadow-2xl">
+            <h2 className="text-4xl font-extrabold text-center mb-8 bg-gradient-to-r from-rose-500 via-yellow-400 to-pink-500 bg-clip-text text-transparent">
+              Welcome Back
             </h2>
-            <form>
-              <div className="mb-6">
-                <label
-                  className="block text-gray-900 text-sm font-serif mb-2"
-                  htmlFor="email"
-                >
-                  Email
-                </label>
+
+            <form onSubmit={HandleLogin} className="space-y-6">
+              <div>
+                <label className="text-sm font-medium text-white">Email</label>
                 <input
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="shadow-sm outline-none bg-slate-100 rounded w-full
-                   py-2 px-4 text-gray-700 "
-                  id="email"
                   type="email"
-                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full mt-1 p-3 rounded-md bg-zinc-900 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
               </div>
-              <div className="mb-6 relative">
-                <label
-                  className="block text-slate-900 text-sm font-serif mb-2"
-                  htmlFor="password"
-                >
+
+              <div className="relative">
+                <label className="text-sm font-medium text-white">
                   Password
                 </label>
                 <input
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="shadow-sm border border-gray-100 bg-slate-100 rounded-tl-xl w-full py-2
-                   px-4 text-black font-serif outline-none "
-                  id="password"
                   type={togglepassword ? "text" : "password"}
-                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="w-full mt-1 p-3 rounded-md bg-zinc-900 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
                 {togglepassword ? (
                   <RemoveRedEyeIcon
                     fontSize="small"
                     onClick={() => setTogglePassword(!togglepassword)}
-                    className="absolute right-4 top-12 text-slate-500 transform -translate-y-1/2 cursor-pointer"
+                    className="absolute top-[47px] right-3 cursor-pointer text-gray-400"
                   />
                 ) : (
                   <VisibilityOffIcon
                     fontSize="small"
                     onClick={() => setTogglePassword(!togglepassword)}
-                    className="absolute right-4 top-12 text-slate-500 transform -translate-y-1/2 cursor-pointer"
+                    className="absolute top-[47px] right-3 cursor-pointer text-gray-400"
                   />
                 )}
               </div>
 
-              <div className="flex justify-center mb-4">
-                <button
-                  className="w-full  bg-blue-900 font-serif text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  type="button"
-                  onClick={HandleLogin}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <ClipLoader color="#ffffff" loading={loading} size={20} />
-                  ) : (
-                    "Login"
-                  )}
-                </button>
-              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-gradient-to-r from-pink-500 via-yellow-500 to-orange-500 rounded-md text-white font-semibold hover:scale-105 transition duration-300"
+              >
+                {loading ? (
+                  <div className="flex justify-center">
+                    <ClipLoader color="#ffffff" size={20} />
+                  </div>
+                ) : (
+                  "Login"
+                )}
+              </button>
             </form>
-            <div className="text-center mt-6">
-              <p className="text-slate-900 font-serif text-sm">
-                Don't have an account?
-                <Link
-                  to="/register"
-                  className="text-blue-500 text-sm hover:text-blue-700 font-semibold"
-                >
-                  &nbsp;Register now
-                </Link>
-              </p>
+
+            <div className="text-center mt-6 text-sm text-gray-400">
+              Don’t have an account?{" "}
+              <Link
+                to="/register"
+                className="font-semibold bg-gradient-to-r from-yellow-300 to-pink-400 bg-clip-text text-transparent hover:underline"
+              >
+                Register now
+              </Link>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "./component/Layout";
-import SenderChayBox from "./ChatApp/SenderChayBox";
+
 import ProjectExplore from "./ProjectSection/ProjectExplore";
 import Blog from "./Blog";
 import Login from "./Login";
@@ -33,10 +33,6 @@ export const createRouter = () => {
         {
           path: "profile",
           element: <MobileProfile />,
-        },
-        {
-          path: "chat",
-          element: <SenderChayBox />,
         },
         {
           path: "explore/:id",

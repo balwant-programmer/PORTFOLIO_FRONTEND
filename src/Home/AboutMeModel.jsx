@@ -4,20 +4,24 @@ import CloseIcon from "@mui/icons-material/Close";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import axios from "axios";
 import { aboutMeData } from "../api/aboutMeApi";
 import Spinner from "../Spinner";
 import { useDispatch } from "react-redux";
 import { HidentheNavAndmore } from "../redux/Slice/throuaboutHihdeSlice";
 import { Mernimage } from "../Data/mernImage";
 import { skillName } from "../Data/SkillName";
+
 const AboutMeModel = ({ isOpen, setIsOpen }) => {
-  const settings = {
+  const [image, setImageData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  const sliderSettings = {
     dots: false,
     infinite: true,
-    speed: 1000,
+    speed: 800,
     autoplay: true,
-    autoplaySpeed: 1000,
+    autoplaySpeed: 2000,
     slidesToShow: 2,
     slidesToScroll: 1,
     arrows: false,
@@ -27,16 +31,14 @@ const AboutMeModel = ({ isOpen, setIsOpen }) => {
     if (isOpen) {
       dispatch(HidentheNavAndmore(true));
       document.body.style.overflow = "hidden";
+
       const fetchData = async () => {
         try {
           setLoading(true);
           const { imageData, success } = await aboutMeData();
-          if (success) {
-            setImageData(imageData?.aboutMeImage);
-            setLoading(false);
-          }
+          if (success) setImageData(imageData?.aboutMeImage || []);
         } catch (error) {
-          console.log("Error while fetching image data: ", error);
+          console.error("Error fetching image data:", error);
         } finally {
           setLoading(false);
         }
@@ -57,108 +59,95 @@ const AboutMeModel = ({ isOpen, setIsOpen }) => {
     dispatch(HidentheNavAndmore(false));
   };
 
-  const [image, setImageData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-
   return (
-    <div>
-      <Modal
-        isOpen={isOpen}
-        onRequestClose={closeModal}
-        contentLabel="About Me Modal"
-        className="mx-2 lg:mx-20 xl:mx-64 p-2 lg:p-6 lg:mt-24 my-10 border-1 border-black  rounded-lg bg-gray-950 shadow-2xl z-50 relative"
-        overlayClassName="bg-black  bg-opacity-60 fixed inset-0"
-      >
-        <div className="text-white">
-          <div
-            className="absolute top-1 right-1 cursor-pointer text-white
-           hover:text-gray-400 shadow flex items-center justify-center rounded-full transition duration-300"
-          >
-            <CloseIcon
-              titleAccess="close"
-              fontSize="small"
-              onClick={closeModal}
-            />
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={closeModal}
+      contentLabel="About Me Modal"
+      className="mx-4 md:mx-16 xl:mx-60 p-3 md:p-8 mt-14 bg-gradient-to-br
+       from-[#0f0f0f] via-[#181818] to-[#111111] border border-gray-800 
+       rounded-2xl shadow-2xl relative overflow-hidden h-[100vh] sm:h-[90vh] md:h-[80vh] lg:h-[80vh]"
+      overlayClassName="bg-black/70 fixed inset-0 flex items-center justify-center z-50"
+    >
+      <div className="text-white font-sans relative">
+        {/* Close Icon */}
+        <div className="absolute top-3 right-3 cursor-pointer hover:text-red-400 transition">
+          <CloseIcon onClick={closeModal} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          {/* Left Section */}
+          <div>
+            <h2
+              className="text-2xl md:text-4xl font-poppins
+             bg-gradient-to-r from-green-400 to-teal-300 text-transparent bg-clip-text mb-2"
+            >
+              Who Am I?
+            </h2>
+
+            <p
+              className="text-sm  font-poppins brightness-125  
+           
+            leading-relaxed mb-4"
+            >
+              I’m a{" "}
+              <span className="text-green-400 font-semibold">
+                MERN Stack Developer
+              </span>{" "}
+              who loves turning concepts into full-fledged products. I thrive in
+              building fast, scalable, and user-friendly web applications.
+            </p>
+
+            <div className="flex flex-wrap gap-2 mb-6">
+              {skillName.map((tech, idx) => (
+                <span
+                  key={idx}
+                  className="bg-green-600/10 border border-green-400 text-green-300 text-xs font-medium px-3 py-1 rounded-full hover:bg-green-600 hover:text-white transition duration-300"
+                >
+                  #{tech}
+                </span>
+              ))}
+            </div>
+
+            <h3 className="text-xl font-bold text-green-400 mb-4">
+              MERN <span className="text-3xl text-red-900">Stack</span>
+            </h3>
+
+            <div className="flex flex-wrap gap-5">
+              {Mernimage.map(({ img, title, name }, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center group relative hover:scale-110 transition-transform"
+                >
+                  <img
+                    src={img}
+                    alt={title}
+                    className="h-8 w-8 rounded-full  shadow-md"
+                  />
+                  <p className="text-green-300 text-xs mt-1">{title}</p>
+                  <span className="absolute -top-7 bg-green-600 text-white text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition">
+                    {name}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="flex flex-col items-center lg:items-start">
-              <h2 className="text-sm font-serif mr-64 text-cyan-300 mb-2">
-                About Me
-              </h2>
-
-              <p className="font-serif text-xs select-none text-green-100 mb-4 lg:text-left">
-                I'm a passionate MERN stack developer, always learning and
-                improving. My journey in full-stack development has taught me a
-                lot about building scalable and efficient applications.
-              </p>
-              <div
-                className="flex flex-wrap 
-              cursor-pointer gap-2  justify-start
-               lg:justify-start"
-              >
-                {skillName?.map((tech, index) => (
-                  <p
-                    key={index}
-                    className="font-serif border 
-                    px-2 rounded-3xl
-                    border-green-400
-                     shadow-lg 
-                     shadow-green-600 text-[11px]
-                      text-gray-300
-                     hover:bg-green-700
-                      hover:text-white transition
-                       duration-300"
-                  >
-                    #{tech}
-                  </p>
-                ))}
-              </div>
-              <div>
-                <h2
-                  className="text-md font-serif
-                 mt-7 text-green-500 mb-10"
-                >
-                  Mern{" "}
-                  <span className="text-red-500 font-serif   text-md">
-                    Stack
-                  </span>
-                </h2>
-                <div className="flex gap-8 mr-24  items-center justify-start">
-                  {Mernimage.map(({ img, title, name }, i) => (
-                    <div
-                      key={i}
-                      className="flex cursor-pointer flex-col items-center relative group"
-                    >
-                      <img
-                        src={img}
-                        className="object-cover rounded-full h-5 w-5 md:h-5 md:w-5"
-                        alt="React.js"
-                      />
-                      <p className="text-green-500 font-serif">{title}</p>
-                      <p
-                        className="hidden absolute
-                 -top-8  group-hover:block : rounded-full shadow
-                 shadow-green-400 px-2 text-sm transition-all duration-300"
-                      >
-                        {name}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          {/* Right Section - Slider */}
+          <div className="relative">
             {loading ? (
               <Spinner />
             ) : (
-              <Slider {...settings}>
-                {image?.map((img, index) => (
-                  <div key={index} className="flex justify-center items-center">
+              <Slider {...sliderSettings}>
+                {image.map((img, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-center items-center px-2"
+                  >
                     <img
                       src={img}
-                      alt="MERN Stack"
-                      className="w-full brightness-150    h-52 lg:h-72 md:h-72 object-cover"
+                      alt={`MERN Slide ${i}`}
+                      className="rounded-xl h-40 lg:h-72 object-cover shadow-xl border border-gray-700 hover:scale-105 transition duration-300"
                     />
                   </div>
                 ))}
@@ -166,8 +155,8 @@ const AboutMeModel = ({ isOpen, setIsOpen }) => {
             )}
           </div>
         </div>
-      </Modal>
-    </div>
+      </div>
+    </Modal>
   );
 };
 

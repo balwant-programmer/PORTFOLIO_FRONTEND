@@ -1,63 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import { Link } from "react-router-dom";
-import HomeFooter from "./HomeFooter";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { sendSmsGmailApi } from "../api/api_url";
 import Spinner from "../Spinner";
+import HomeFooter from "./HomeFooter";
+
 const ContactUse = () => {
   const [userName, setUsername] = useState("");
   const [userEmail, setEmail] = useState("");
-  const [message, SetMessage] = useState("");
-  const [loading, setLaoding] = useState(false);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const HandleSubmitMessage = async () => {
+    if (!userName.trim()) return toast.warning("Please enter your name.");
+    if (!userEmail.trim()) return toast.warning("Please enter your email.");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userEmail))
+      return toast.error("Invalid email address.");
+    if (!message.trim()) return toast.warning("Please enter a message.");
+
     try {
-      if (!userName.trim()) {
-        toast("fill Your Name");
-        return;
-      }
-      if (!userEmail.trim()) {
-        toast("Fill Your Email");
-        return;
-      }
-      const emailregex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-      if (!emailregex.test(userEmail)) {
-        toast("Invalid Email");
-        return;
-      }
-
-      if (!message.trim()) {
-        toast("Fill Your Message");
-        return;
-      }
-      setLaoding(true);
-      const { data } = await axios.post(
-        sendSmsGmailApi,
-        { userEmail, userName, message },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      setLoading(true);
+      const { data } = await axios.post(sendSmsGmailApi, {
+        userEmail,
+        userName,
+        message,
+      });
 
       if (data.success) {
-        toast.success(data?.message);
-        setLaoding(false);
-        setEmail("");
+        toast.success(data.message);
         setUsername("");
-        SetMessage("");
+        setEmail("");
+        setMessage("");
       }
     } catch (error) {
-      console.log("error message gmail", error);
+      toast.error("Something went wrong.");
+      console.error(error);
     } finally {
-      setLaoding(false);
+      setLoading(false);
     }
   };
 
@@ -66,119 +52,100 @@ const ContactUse = () => {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 2 }}
+        transition={{ duration: 1.5 }}
+        className="min-h-screen bg-black text-white px-4 py-5"
       >
-        <div className="min-h-screen  flex flex-col md:flex-row -mt-72">
-          <div
-            className="w-full md:w-1/3  bg-center bg-cover  h-96 "
-            style={{
-              backgroundImage:
-                "url('/customer-support-concepts_662093-1854.avif')",
-            }}
-          ></div>
+        <div className="flex flex-col lg:flex-row max-w-6xl mx-auto gap-6">
+          <div>
+            <img
+              src="\conteactSms.png"
+              alt=""
+              height={500}
+              width={550}
+              className="border-3 rounded-3xl bg-transparent contrast-150"
+            />
+          </div>
 
-          <div className="w-full md:w-1/3 flex  flex-col  justify-center items-center  p-6 space-y-6">
-            <h2 className="text-2xl font-bold text-center text-rose-600 font-serif  ">
-              Contact Us
+          <div className="lg:w-1/2  rounded-xl shadow-xl  space-y-6">
+            <h2 className="text-3xl font-poppins text-rose-500 text-center">
+              Contact Me
             </h2>
 
             <input
+              type="text"
               value={userName}
               onChange={(e) => setUsername(e.target.value)}
-              type="text"
               placeholder="Your Name"
-              className="w-full p-3 placeholder-stone-400 font-serif   bg-slate-100  outline-none  rounded-tl-2xl "
+              className="w-full p-3 rounded-lg bg-[#1e1e1e] text-white placeholder-gray-400 border border-rose-400 outline-none focus:border-blue-500 transition"
             />
 
             <input
+              type="email"
               value={userEmail}
               onChange={(e) => setEmail(e.target.value)}
-              type="email"
               placeholder="Your Email"
-              className="w-full p-3 
-           border-green-200 border-2
-           bg-slate-100 outline-none placeholder-stone-400 font-serif border-none  rounded-tl-2xl"
+              className="w-full p-3 rounded-lg bg-[#1e1e1e] text-white placeholder-gray-400 border border-rose-400 outline-none focus:border-blue-500 transition"
             />
 
             <textarea
               value={message}
-              onChange={(e) => SetMessage(e.target.value)}
+              onChange={(e) => setMessage(e.target.value)}
               placeholder="Your Message"
-              className="w-full p-4 outline-dashed outline-none bg-slate-100 rounded-tl-2xl"
+              className="w-full p-3 h-32 rounded-lg bg-[#1e1e1e] text-white placeholder-gray-400 border border-rose-400 outline-none focus:border-blue-500 transition"
             ></textarea>
 
-            {loading ? (
-              <Spinner />
-            ) : (
-              <>
-                <div
-                  onClick={HandleSubmitMessage}
-                  className="bg-[url('/istockphoto-1452771551-612x612.jpg')] 
-        active:scale-110 hover:scale-105 transition-all duration-300  hover:cursor-pointer p-12
-         sm:p-24 w-full bg-cover  bg-center"
-                ></div>
-              </>
-            )}
-          </div>
-
-          <div
-            className="w-full md:w-1/3 flex justify-center md:border-x-2   items-center bg-black
-       md:bg-white sm:bg-white lg:bg-white space-x-6 py-6 pb-2"
-          >
-            <Link
-              to="https://www.linkedin.com/in/balwant-gupta-67b485353?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app
-"
-              className=" flex items-center justify-center border-2
-           shadow-lg hover:bg-green-400  border-green-400 text-green-400 transition-all duration-500 hover:text-pink-400
-            bg-back  shadow-green-400 rounded-full p-1"
+            <button
+              onClick={HandleSubmitMessage}
+              className="w-full bg-gradient-to-r from-purple-600 to-rose-500 hover:from-rose-500 hover:to-purple-600 text-white font-semibold py-3 rounded-full transition-all duration-300 hover:scale-105"
+              disabled={loading}
             >
-              <LinkedInIcon
-                fontSize="medium"
-                className="  shadow-lg  rounded-3xl shadow-rose-400 animate-bounce   "
-              />
-            </Link>
-
-            <Link
-              to="https://x.com/BalwantGupta123?t=Obrl7DrfXLsP37ZKHlPyJw&s=09
-
-"
-              className=" flex items-center justify-center border-2
-           shadow-lg hover:bg-green-400  border-green-400 text-green-400 transition-all duration-500 hover:text-pink-400
-            bg-back  shadow-green-400 rounded-full p-1"
-            >
-              <TwitterIcon
-                fontSize="medium"
-                className="  shadow-lg  rounded-full  shadow-rose-400 animate-bounce   "
-              />
-            </Link>
-            <Link
-              to="https://github.com/balwant-programmer"
-              className=" flex items-center justify-center border-2
-           shadow-lg hover:bg-green-400  border-green-400 text-green-400 transition-all duration-500 hover:text-pink-400
-            bg-back  shadow-green-400 rounded-full p-1"
-            >
-              <GitHubIcon
-                fontSize="medium"
-                className="  shadow-lg  rounded-full shadow-rose-400 animate-bounce   "
-              />
-            </Link>
-
-            <Link
-              to="https://www.instagram.com/balwant.programmer12?igsh=cXNkZ3U5OXdtMXQ5
-
-"
-              className=" flex items-center justify-center border-2
-           shadow-lg hover:bg-green-400  border-green-400 text-green-400 transition-all duration-500 hover:text-pink-400
-            bg-back  shadow-green-400 rounded-full p-1"
-            >
-              <InstagramIcon
-                fontSize="medium"
-                className="  shadow-lg  rounded-full shadow-rose-400 animate-bounce   "
-              />
-            </Link>
+              {loading ? (
+                <div className="flex justify-center items-center gap-2">
+                  Sending
+                  <div className="h-5 w-5 rounded-full border-2 border-t-green-500 animate-spin"></div>
+                </div>
+              ) : (
+                "Send Message"
+              )}
+            </button>
           </div>
         </div>
+
+        <div className="mt-12 flex justify-center gap-6 bg-gray-900 p-5 mx-2 rounded-lg sm:mx-96">
+          {[
+            {
+              href: "https://www.linkedin.com/in/balwant-gupta-67b485353",
+              icon: <LinkedInIcon />,
+              color: "text-blue-400",
+            },
+            {
+              href: "https://x.com/BalwantGupta123",
+              icon: <TwitterIcon />,
+              color: "text-sky-400",
+            },
+            {
+              href: "https://github.com/balwant-programmer",
+              icon: <GitHubIcon />,
+              color: "text-gray-300",
+            },
+            {
+              href: "https://www.instagram.com/balwant.programmer12",
+              icon: <InstagramIcon />,
+              color: "text-pink-500",
+            },
+          ].map((item, idx) => (
+            <Link
+              to={item.href}
+              key={idx}
+              target="_blank"
+              className={`bg-[#1a1a1a] p-3 rounded-full shadow-lg hover:bg-rose-600 hover:scale-110 transform transition-all hover:text-white duration-300 ${item.color}`}
+            >
+              {item.icon}
+            </Link>
+          ))}
+        </div>
       </motion.div>
+
       <HomeFooter />
     </>
   );

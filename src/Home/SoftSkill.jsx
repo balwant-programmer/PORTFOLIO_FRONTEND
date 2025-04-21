@@ -5,7 +5,10 @@ const SoftSkill = () => {
     <>
       <div
         className="-mx-5 mt-3 border p-3 py-8 border-y-green-600 border-x-rose-400 
-      rounded-tr-xl flex flex-col font-serif gap-y-3 text-sm md:text-md break-all "
+      rounded-tr-xl flex flex-col font-serif gap-y-3 text-md md:text-md break-words 
+      bg-gradient-to-r from-blue-400  via-blue-500  to-yellow-400 
+           bg-gray-900  bg-clip-text text-transparent
+      "
       >
         <p>
           <span>●</span>&nbsp; I troubleshoot and debug issues in both

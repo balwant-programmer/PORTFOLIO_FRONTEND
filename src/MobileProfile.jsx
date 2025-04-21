@@ -7,9 +7,10 @@ import { toast } from "react-toastify";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import Spinner from "./Spinner";
 import axios from "axios";
-import { userApi, userupdateCredantialApi } from "./api/api_url";
+import { userupdateCredantialApi } from "./api/api_url";
 import { useDispatch } from "react-redux";
 import { userLogoUpdate } from "./redux/Slice/userLogoSlice";
+
 const MobileProfile = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,224 +21,180 @@ const MobileProfile = () => {
   const [comingEmail, setComingEmailData] = useState("");
   const [comingUSerName, setCominguserData] = useState("");
   const dispatch = useDispatch();
-
   const user = userTokencheck();
-  const [SpinnerLoad, setSpinnerLoad] = useState();
+  const [SpinnerLoad, setSpinnerLoad] = useState(false);
 
   const handleSubmit = async (id) => {
-    if (!username) {
-      toast.warn("fill user update Name");
-      return;
+    if (!username || !email) {
+      return toast.warn("Please fill in all fields.");
     }
-    if (!email) {
-      toast("fill Your update email Email !");
-      return;
-    }
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast("Email is not valid!");
-      return;
+      return toast.error("Invalid email format.");
     }
 
     const { data } = await axios.put(
       `${userupdateCredantialApi}/${id}`,
       { newEmail: email, newUsername: username },
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-      { withCredentials: true }
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      }
     );
-    const { success, message, updateData } = data;
-    console.log(updateData);
-    if (success) {
-      const { email, username } = updateData;
-      setComingEmailData(email);
-      setCominguserData(username);
-      toast(message);
+
+    if (data.success) {
+      setComingEmailData(data.updateData.email);
+      setCominguserData(data.updateData.username);
+      toast.success(data.message);
       setIsModalOpen(false);
     }
   };
 
   const HandleLogout = async () => {
-    const response = await logout();
-    const { message, success } = response;
-    if (success) {
+    const res = await logout();
+    if (res.success) {
+      dispatch(userLogoUpdate(null));
       navigate("/");
-      toast(message);
-      dispatch(userLogoUpdate(null))
+      toast.success(res.message);
     }
   };
+
   const HandleChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !file.type.startsWith("image/")) {
+      return toast.error("Please select a valid image file.");
+    }
+
+    SetUpadateLogo(file);
+    const formData = new FormData();
+    formData.append("upadate_logo", file);
+
+    setSpinnerLoad(true);
     try {
-      const file = e.target.files[0];
-      if (!file) return toast("file not found");
-      if (!file.type.startsWith("image/")) {
-        console.log("Selected file is not an image");
-        return;
-      }
-
-      SetUpadateLogo(file);
-
-      const formData = new FormData();
-      formData.append("upadate_logo", file);
-      setSpinnerLoad(true);
       const userImage = await imageUpadate(formData);
       if (userImage.success) {
-        setSpinnerLoad(false);
-        const logo = userImage?.user;
+        const logo = userImage.user;
         setCommintImage(logo);
         dispatch(userLogoUpdate(logo));
       }
-    } catch (error) {
-      console.log("error");
+    } catch (err) {
+      toast.error("Image upload failed.");
     } finally {
       setSpinnerLoad(false);
     }
   };
 
-  return (
-    <>
-      {!!user ? (
-        <div className="bg-gradient-to-r from-blue-500 -mt-5 via-purple-300 to-pink-700 shadow-md p-2 h-60 container mx-auto -my-24">
-          <div className="shadow bg-white min-w-72 rounded h-96  animate-fade-in-up mt-10">
-            <button
-              className="border-1 py-2 pl-2 lg:mt-5 "
-              onClick={HandleLogout}
+  return user ? (
+    <div className="bg-black p-4 min-h-[100vh] flex justify-center items-start text-white">
+      <div className="bg-gray-900 rounded-2xl shadow-lg w-full max-w-md p-6 mt-20">
+        <div className="flex justify-end">
+          <button
+            onClick={HandleLogout}
+            className="text-rose-400 hover:text-rose-300 flex items-center gap-1 transition-all"
+          >
+            Logout <LoginIcon />
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center mt-6">
+          <label htmlFor="logoimage" className="relative group cursor-pointer">
+            <input
+              type="file"
+              id="logoimage"
+              hidden
+              onChange={HandleChange}
+              accept="image/*"
+            />
+            <div
+              className="w-24 h-24 border-2 border-gray-600 rounded-full bg-cover bg-center bg-no-repeat shadow-lg"
+              style={{
+                backgroundImage: `url(${CommingImage || user?.logo})`,
+              }}
             >
-              <span>Logout</span>
-              <LoginIcon />
-            </button>
-            <div className="container mx-auto flex items-center justify-center">
-              <label htmlFor="logoimage" className="flex">
-                <input
-                  type="file"
-                  id="logoimage"
-                  onChange={HandleChange}
-                  name="logoimage"
-                  accept="image\*"
-                  hidden
-                />
-
-                {SpinnerLoad ? (
-                  <>
-                    <div
-                      className="border-t-red-200 border-b-red-300 border-l-red-900
-                  border-r-red-700 border-2  rounded-full size-12 p-1 flex items-center justify-center"
-                    >
-                      <span className="absolute top-10  rounded-full">
-                        <Spinner />
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <div
-                    className="border-t-red-200 border-b-red-300 border-l-red-900
-                  border-r-red-700 border-2 relative rounded-full size-12 p-1"
-                    style={{
-                      backgroundImage: `url(${
-                        CommingImage ? CommingImage : user?.logo
-                      })`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      backgroundRepeat: "no-repeat",
-                    }}
-                  >
-                    <div className="mt-7  absolute -top-1 -right-2 -ml-3 size-5 text-white bg-green-300 rounded-full flex justify-center items-center">
-                      <PhotoCameraIcon fontSize="10" />
-                    </div>
-                  </div>
-                )}
-              </label>
+              {SpinnerLoad && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Spinner />
+                </div>
+              )}
             </div>
-
-            <div className=" mt-3 gap-1 lg:w-112 lg:flex justify-center">
-              <p
-                className=" shadow mx-9 rounded px-7 lg:w-72 py-7 hover:scale-105
-               hover:bg-gray-100 transition-all duration-300 bg-gradient-to-r from-blue-300 to-pink-100 "
-              >
-                {!!comingEmail ? comingEmail : user?.email}
-              </p>
-              <p
-                className="shadow mx-9 rounded px-6 mt-3 lg:w-72 py-7 bg-gradient-to-r from-pink-300 to-pink-100  
-              
-               hover:scale-105 hover:bg-gray-100 transition-all duration-300"
-              >
-                {!!comingUSerName ? comingUSerName : user?.username}
-              </p>
+            <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-1 text-white shadow-md">
+              <PhotoCameraIcon fontSize="small" />
             </div>
-            <div className="flex justify-center mt-8">
-              <button
-                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                onClick={() => {
-                  setIsModalOpen(true);
-                  setUsername(user?.username);
-                  setEmail(user?.email);
-                }}
-              >
-                Edit Profile
-              </button>
+          </label>
+
+          <div className="mt-6 space-y-3 w-full text-center">
+            <div className="text-md font-medium bg-gray-800 py-3 rounded-lg border border-gray-700">
+              {comingEmail || user?.email}
+            </div>
+            <div className="text-md font-medium bg-gray-800 py-3 rounded-lg border border-gray-700">
+              {comingUSerName || user?.username}
             </div>
           </div>
 
-          {isModalOpen && (
-            <div
-              className="fixed inset-0  flex items-center justify-center h-screen bg-black bg-opacity-50"
-              style={{ zIndex: 1000 }}
-            >
-              <div className="bg-white rounded-lg shadow-lg p-6 h-2/4 m-4">
-                <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
-                <form>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter username"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter email"
-                    />
-                  </div>
-                  <div className="flex justify-end gap-3 relative">
-                    <button
-                      type="button"
-                      onClick={() => setIsModalOpen(false)}
-                      className="absolute -top-52 text-2xl"
-                    >
-                      X
-                    </button>
-                    <button
-                      onClick={() => handleSubmit(user?.userId)}
-                      type="button"
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+          <button
+            onClick={() => {
+              setIsModalOpen(true);
+              setUsername(user?.username);
+              setEmail(user?.email);
+            }}
+            className="mt-6 bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-all"
+          >
+            Edit Profile
+          </button>
         </div>
-      ) : (
-        <Spinner />
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center">
+          <div className="bg-gray-900 text-white p-6 rounded-lg shadow-2xl w-11/12 max-w-md animate-fade-in-up border border-gray-800">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Edit Profile</h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-400 hover:text-rose-400 text-xl"
+              >
+                ✕
+              </button>
+            </div>
+            <form className="space-y-4">
+              <div>
+                <label className="text-sm text-gray-300 block mb-1">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-2 bg-gray-800 text-white border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-300 block mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="w-full px-4 py-2 bg-gray-800 text-white border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="flex justify-end pt-4">
+                <button
+                  type="button"
+                  onClick={() => handleSubmit(user?.userId)}
+                  className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
-    </>
+    </div>
+  ) : (
+    <Spinner />
   );
 };
 

@@ -11,7 +11,6 @@ import {
   A11y,
   Autoplay,
 } from "swiper/modules";
-
 import "swiper/css/bundle";
 
 const ProjectExplore = () => {
@@ -23,13 +22,10 @@ const ProjectExplore = () => {
     const fetchData = async () => {
       try {
         const { data } = await axios.get(getprojectApi);
-        console.log(data?.projectData);
-        if (data?.projectData && data?.projectData.length > 0) {
-          const singleData = data?.projectData?.filter(
-            (project) => project._id === id
-          );
-          setObjectSingle(singleData[0]);
-        }
+        const singleData = data?.projectData?.filter(
+          (project) => project._id === id
+        );
+        setObjectSingle(singleData[0]);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -40,101 +36,86 @@ const ProjectExplore = () => {
     fetchData();
   }, [id]);
 
-  if (loading) {
-    return <Spinner />;
-  }
+  if (loading) return <Spinner />;
 
   return (
-    <>
+    <div className="bg-gradient-to-tr from-[#0f0f0f] to-[#1c1c1c] min-h-screen text-white font-poppins pb-20 pt-10 px-4">
       <Link
         to="/"
-        className="text-end absolute md:mt-16 sm:mt-16 lg:top-16 right-3
-         top-1 px-3 rounded focus:text-blue-400 font-bold hover:text-red-300 text-green-400"
+        className="inline-block mb-6 text-sm md:text-base font-semibold text-rose-400 hover:text-blue-300 transition duration-300 md:mt-16"
       >
-        <span className="text-red-600">↩ </span> back
+        <span className="text-red-500 text-lg">↩</span> Back to Projects
       </Link>
 
-      <div
-        className="bg-white font-serif select-none lg:mx-72 md:mx-24
-       mx-1 mt-6 md:mt-12 rounded-xl  overflow-hidden"
-      >
-        <div
-          className="swiper-container"
-          style={{ width: "100%", height: "250px" }}
+      <div className="max-w-4xl mx-auto bg-[#111] rounded-xl shadow-2xl overflow-hidden">
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay, Scrollbar, A11y]}
+          spaceBetween={10}
+          slidesPerView={1}
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 2000, disableOnInteraction: false }}
+          loop={true}
+          className="rounded-xl"
         >
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay, Scrollbar, A11y]}
-            spaceBetween={-10}
-            slidesPerView={2}
-            loop={true}
-            Pagination
-            autoplay={{
-              delay: 1500,
-              disableOnInteraction: false,
-            }}
-            onSlideChange={() => console.log("slide change")}
-            onSwiper={(swiper) => console.log(swiper)}
-          >
-            {objectSingle?.images?.map((img, index) => (
-              <SwiperSlide key={index}>
-                <img src={img} alt="prjectimage" width={250} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
+          {objectSingle?.images?.map((img, idx) => (
+            <SwiperSlide key={idx}>
+              <img
+                src={img}
+                alt={`Project Slide ${idx}`}
+                className="w-full h-[250px] sm:h-[550px] object-cover"
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
-      <div className=" md:mx-64 space-y-4 bg-gray-100 px-3 py-1 rounded-md">
-        <div>
-          <p className="md:text-lg text-gray-600 text-sm  font-poppins text-md">
-            {objectSingle?.introduction}
-          </p>
-        </div>
 
-        <div className="select-none">
-          <h2 className="md:text-2xl font-serif  text-black mb-2  text-md select-none">
-            Technology
+      <div className="max-w-4xl mx-auto mt-10 bg-[#1f1f1f] p-6 rounded-xl shadow-md space-y-6">
+        <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+          {objectSingle?.introduction}
+        </p>
+
+        <div>
+          <h2 className="text-xl font-semibold text-rose-400 mb-2">
+            🛠️ Technologies Used
           </h2>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
+          <div className="flex flex-wrap gap-2">
             {objectSingle?.Technology?.map((tech, idx) => (
               <span
                 key={idx}
-                className="bg-gray-900 brightness-200 text-green-500 px-4 p-1 font-mono shadow-inner shadow-rose-500 rounded-full text-sm"
+                className="bg-gray-800 text-green-400 text-xs font-mono px-3 py-1 rounded-full border border-rose-500"
               >
-                #{tech?.toUpperCase()}
+                #{tech.toUpperCase()}
               </span>
             ))}
           </div>
         </div>
 
-        <div className="select-none">
-          <h2 className="md:text-2xl font-serif text-lg text-gray-800 mb-2 select-none">
-            Deploy
+        <div>
+          <h2 className="text-xl font-semibold text-blue-400 mb-2">
+            🚀 Deployment Info
           </h2>
-          <div className="text-lg text-gray-600 ">
+          <ul className="list-disc list-inside text-sm text-gray-300">
             {objectSingle?.deploy?.map((deploy, idx) => (
-              <p
-                key={idx}
-                className="mt-2 text-blue-500 font-serif text-sm select-none"
-              >
-                {deploy}
-              </p>
+              <li key={idx}>{deploy}</li>
             ))}
-          </div>
+          </ul>
         </div>
 
-        <div className="pb-24 select-none">
-          <p className="text-lg text-gray-800 mb-2 font-serif text-md">
-            Website Link
-          </p>
+        <div>
+          <h2 className="text-xl font-semibold text-purple-400 mb-2">
+            🌐 Visit Website
+          </h2>
           <Link
             to={objectSingle?.websiteLink}
-            className="text-blue-500 font-poppins text-md hover:text-blue-700 underline"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-blue-500 underline hover:text-rose-400 transition"
           >
-            Open Website
+            {objectSingle?.websiteLink}
           </Link>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

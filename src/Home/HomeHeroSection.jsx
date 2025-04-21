@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Link, useFetcher } from "react-router-dom";
-import NameAnimation from "../NameAnimation";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import axios from "axios";
-import { getLogoApi, getReumeDownload, getVideoApi } from "../api/api_url";
 import DownloadIcon from "@mui/icons-material/Download";
+import axios from "axios";
 import Spinner from "../Spinner";
+import { getLogoApi, getReumeDownload, getVideoApi } from "../api/api_url";
 
 const Icons = [
   {
@@ -22,165 +22,171 @@ const Icons = [
   },
   {
     icons: <LinkedInIcon />,
-    url: "https://www.linkedin.com/in/balwant-gupta-67b485353?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+    url: "https://www.linkedin.com/in/balwant-gupta-67b485353",
   },
 ];
 
 const HomeHeroSection = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [logo, setherologo] = useState(null);
-  const [logoLoading, seLogoLoading] = useState(false);
-  const [Video, setVideo] = useState("");
+  const [logo, setHeroLogo] = useState(null);
+  const [logoLoading, setLogoLoading] = useState(false);
+  const [video, setVideo] = useState("");
 
   useEffect(() => {
-    setIsVisible(true);
-    seLogoLoading(true);
-    const fetchDaat = async () => {
+    setLogoLoading(true);
+    const fetchLogo = async () => {
       try {
         const { data } = await axios.get(getLogoApi);
-        if (data?.success) {
-          setherologo(data?.heroLogo);
-          seLogoLoading(false);
-        }
+        if (data?.success) setHeroLogo(data?.heroLogo);
       } catch (error) {
-        seLogoLoading(false);
-
-        console.log("error while getting the logo fetch");
+        console.log("Error while fetching logo:", error);
       } finally {
-        seLogoLoading(false);
+        setLogoLoading(false);
       }
     };
-    fetchDaat();
+    fetchLogo();
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchVideo = async () => {
       try {
         const { data } = await axios.get(getVideoApi);
-        console.log(data);
-        if (data.success) {
-          setVideo(data?.videoUrl?.video);
-        }
+        if (data.success) setVideo(data?.videoUrl?.video);
       } catch (error) {
-        console.log(error);
+        console.log("Error while fetching video:", error);
       }
     };
-
-    fetchData();
+    fetchVideo();
   }, []);
 
   const handleResumeDownload = async () => {
     try {
       const { data } = await axios.get(getReumeDownload);
       if (data.success) {
-        const fileUrl = data?.urlResume;
-        window.open(fileUrl, "_blank");
+        window.open(data?.urlResume, "_blank");
       }
     } catch (error) {
-      console.error(
-        "Error while downloading the resume:",
-        error.response || error.message
-      );
+      console.error("Error while downloading the resume:", error);
     }
   };
 
-  const handleVideoPlay = () => {
-    setIsVisible(true);
-    seLogoLoading(false);
-  };
-
   return (
-    <div className="h-96 relative flex flex-col bg-black brightness-150   items-center px-4 lg:px-16">
-      <div className="absolute top-0 left-0 w-full h-96 z-0 opacity-12">
+    <div className="relative w-full min-h-screen overflow-hidden bg-cover bg-center bg-no-repeat">
+      <div className="absolute inset-0 z-0">
         <video
           autoPlay
           loop
           muted
-          className="w-full h-full object-cover"
           playsInline
           preload="auto"
-          onPlay={handleVideoPlay}
+          className="w-full h-full object-cover brightness-50"
         >
-          {Video && <source src={Video} type="video/mp4" />}
-          Your browser does not support the video tag.
+          {video && <source src={video} type="video/mp4" />}
         </video>
+        <div className="absolute inset-0 bg-black bg-opacity-40" />
       </div>
 
-      {logoLoading ? (
-        <Spinner />
-      ) : (
-        logo && (
-          <div
-            className={`mt-52 transition-opacity rounded-full duration-400 ${
-              isVisible ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <img
-              src={logo}
-              alt="Hero Image"
-              className="w-60 h-60 py-2 px-6 shadow-green-500 duration-300 cursor-pointer scale-105 shadow-xl bg-green-300 rounded-full brightness-100 mt-5 object-cover mx-auto animate-spin"
-            />
-          </div>
-        )
-      )}
-
-      <div
-        className={`absolute right-3 top-16 transform -translate-y-1/2 flex
-        flex-col space-y-6 transition-opacity duration-1000 delay-500 ${
-          isVisible ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <div>
-          <div
-            className={`text-center transition-opacity  mr-10  relative top-40
-             lg:-left-[400px] xl:-left-[700px] md:-left-[300px] md:top-52  duration-1000 ${
-               isVisible ? "opacity-100" : "opacity-0"
-             }`}
-          >
-            <div className="text-yellow-500 font-serif shadow-md shadow-green-500 text-lg mt-16 mr-52">
-              Hey, I'm
-            </div>
-
-            <h1 className=" -ml-32 font-serif text-white mt-4">
-              <NameAnimation />
-            </h1>
-            <div className="font-bold mt-1 mr-16 text-lg font-serif text-cyan-400 sm:text-xl ">
-              mern stack{" "}
-              <span className="text-green-200 font-serif text-2xl">
-                developer
-              </span>{" "}
-              <br />
-              <button
-                onClick={handleResumeDownload}
-                className="text-green-900 px-3 py-1 mt-2 mb-0 md:py-3 hover:bg-slate-200 flex gap-x-1 items-center font-serif focus:scale-110
-       bg-slate-100 rounded text-sm"
+      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between px-6 py-16">
+        <div className="flex-1">
+          {["Hey , I'm", "Balwant Gupta", "MERN Stack Developer"].map(
+            (text, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.3, duration: 0.8 }}
+                viewport={{ once: false }}
+                className={`${
+                  i === 0
+                    ? "text-3xl"
+                    : i === 2
+                    ? "text-6xl sm:text-8xl brightness-200"
+                    : "text-4xl sm:text-6xl"
+                } mb-2 font-poppins font-bold bg-gradient-to-r ${
+                  i === 0
+                    ? "from-pink-500 via-yellow-300 to-green-400"
+                    : i === 1
+                    ? "from-purple-400 via-blue-500 to-indigo-600"
+                    : "from-blue-500 via-purple-600 to-indigo-700"
+                } bg-clip-text text-transparent`}
               >
-                Download cv
-                <DownloadIcon fontSize="small" className="text-rose-900" />
-              </button>
-            </div>
-          </div>
+                {text}
+              </motion.div>
+            )
+          )}
+
+          <motion.button
+            onClick={handleResumeDownload}
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              delay: 0.3,
+              duration: 0.7,
+              ease: "easeOut",
+              type: "tween",
+            }}
+            viewport={{ once: true }}
+            className="mt-4 px-4 py-2 ml-2 bg-gradient-to-r from-pink-700 via-black to-black 
+  text-white rounded text-sm font-poppins flex items-center gap-2 
+  transition duration-500 ease-in-out 
+  hover:from-pink-600 hover:via-yellow-400 hover:to-green-300"
+          >
+            Download CV{" "}
+            <DownloadIcon fontSize="small" className="text-orange-700" />
+          </motion.button>
+
+          <motion.div
+            className="flex space-x-4 mt-8"
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1.5, duration: 2 }}
+            viewport={{ once: false }}
+          >
+            {Icons.map(({ icons, url }, index) => (
+              <Link
+                key={index}
+                to={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 ml-2 flex items-center justify-center
+                 text-white bg-gradient-to-r from-blue-600 via-purple-900
+                  to-rose-800 rounded-full transition duration-300 hover:scale-110 hover:shadow-lg"
+              >
+                {icons}
+              </Link>
+            ))}
+          </motion.div>
         </div>
 
-        {Icons?.map(({ icons, url }, index) => (
-          <div className="flex justify-end">
-            <Link
-              to={url}
-              key={index}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              className="text-green-400 animate-spin scale-75
-             w-10 h-10 flex items-center justify-center hover:text-red-500
-              hover:bg-green-500 shadow-none hover:shadow-[0_0_10px_4px_rgba(4,197,194,1)] 
-              transition duration-300 border-2 border-green-500 hover:scale-105 ease-in-out
-               rounded-full "
-            >
-              {icons}
-            </Link>
-          </div>
-        ))}
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false }}
+          transition={{ delay: 0.8, duration: 1 }}
+          className="flex-1 flex justify-center items-center lg:mt-0 w-full"
+        >
+          {logoLoading ? (
+            <div
+              className="w-full 
+                 max-w-[400px] h-[400px] sm:h-[400px] md:h-[400px] lg:h-[500px]
+                  bg-center bg-no-repeat contrast-150 bg-contain bg-transparent rounded-3xl shadow-xl transition duration-500"
+              style={{
+                backgroundImage: `url("\hoemImage.png")`,
+              }}
+            ></div>
+          ) : (
+            logo && (
+              <div
+                className="
+      w-full max-w-[400px] h-[400px] lg:h-[500px]
+      bg-center bg-no-repeat bg-contain
+      rounded-3xl shadow-xl transition duration-500
+      filter contrast-150 saturate-150 
+    "
+                style={{ backgroundImage: `url(${logo})` }}
+              />
+            )
+          )}
+        </motion.div>
       </div>
     </div>
   );

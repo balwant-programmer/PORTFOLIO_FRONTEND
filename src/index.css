@@ -3,10 +3,9 @@
 @tailwind utilities;
 
 
-@layer components {
-  /* Custom shadow on top */
-  .shadow-top {
-    box-shadow: 0 -7px 10px rgba(100, 100, 100, 0.1); /* Custom shadow on top */
-  }
 
+html, body {
+  @apply bg-black text-white font-poppins;
+  background-color: #000000;
+  color-scheme: dark;
 }

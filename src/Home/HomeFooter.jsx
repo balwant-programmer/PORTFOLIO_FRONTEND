@@ -1,150 +1,131 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import MailIcon from "@mui/icons-material/Mail";
 import { motion } from "framer-motion";
-import NameAnimation from "../NameAnimation";
+
 const HomeFooter = () => {
   return (
-    <>
-      <div className="bg-black font-serif  py-8 px-4 mb-16 md:mb-0 lg:mb-0">
+    <div className="bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white py-16 px-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 1.2 }}
+        className="max-w-6xl mx-auto text-center space-y-14"
+      >
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 2 }}
+          initial={{ y: -50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 1 }}
+          className="flex flex-col items-center"
         >
-          <div className="max-w-md  mx-auto text-center space-y-4">
-            <div>
-              <div className="rounded-full  p-1">
-                <img
-                  src="/InShot_20250227_071440518.jpg"
-                  className="rounded-full border-2 border-green-400 brightness-100 shadow-sm shadow-green-400 size-12 mx-auto mb-2  object-cover    "
-                  alt="Logo"
-                />
-
-                <h2 className="italic font-serif">
-                  <NameAnimation />
-                </h2>
-              </div>
-            </div>{" "}
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 2 }}
-            >
-              <div className="space-y-2  brightness-200">
-                <div className="text-white flex">
-                  <h2 className="font-serif text-rose-900 text-sm">
-                    Education :-:
-                  </h2>
-                </div>
-                <div className="text-white font-serif flex text-[13px]">
-                  <p>
-                    Post Graduate Diploma in Computer Application (PGDCA) :2023
-                    ,[CGPA - 7.73]
-                  </p>
-                </div>
-                <div className="text-white flex  justify-center pb-5">
-                  <h2 className="text-[11px] text-green-400">
-                    Mangalayatan University of aligarh ,u.p , India
-                  </h2>
-                </div>
-
-                <div className="text-white flex text-[13px] md:text-md  ">
-                  <p>
-                    Master of Computer Applications (MCA) : 2025 pursuing ,
-                    [SGPA 7.61]
-                  </p>
-                </div>
-                <div className="text-white flex justify-center">
-                  <h2 className="text-[11px] text-green-400">
-                    Asian International University Manipur
-                  </h2>
-                </div>
-
-                <div className="text-white text-sm pt-5  ">
-                  <p>certificate of MERN STACK : 2025</p>
-                </div>
-                <div className="text-white flex justify-center font-serif pb-10">
-                  <h2 className="text-sm text-green-400">
-                    Procoderr.com platForm
-                  </h2>
-                </div>
-
-                <p className="text-md flex items-center text-green-400 gap-x-2   pt-2 ">
-                  <Link
-                    to="mailto:Email@gmail.com"
-                    className="hover:underline flex gap-x-2 font-serif italic items-center 
-              "
-                  >
-                    <MailIcon
-                      className="border-2 rounded-full p-1 shadow-xl border-green-500
-               hover:text-red-400 shadow-rose-400 hover:bg-green-400 animate-spin scale-110
-                hover:shadow-green-500 transition-all  duration-500"
-                    />
-                    balwant.programmer12@gmail.com
-                  </Link>
-                </p>
-
-                <hr className="border-green-400" />
-                <p className="text-lg font-serif flex gap-x-2 text-green-400">
-                  <LocalPhoneIcon
-                    className="border-2 rounded-full p-1 shadow-xl border-green-500 brightness-125 
-               hover:text-red-400 shadow-rose-400  hover:bg-green-400  animate-spin scale-110 hover:shadow-green-500 transition-all duration-500"
-                  />
-                  <Link to="tel:+7307872065" className="hover:underline italic">
-                    7307872065
-                  </Link>
-                </p>
-              </div>
-            </motion.div>
-            <hr className="border-green-400" />
+          <div className="relative w-28 h-28 mx-auto">
+            <img
+              loading="lazy"
+              src="/file_0000000094d46230813f8227ae7b46c2_conversation_id=6803e857-63d8-800b-99ff-4e36c1ddb55a&message_id=5d2267c2-9de2-4cc8-a3b1-9ffbc90ba992.png"
+              alt="logo"
+              className="rounded-full border-4 border-emerald-500 shadow-lg object-cover w-full h-full transition-transform duration-300"
+            />
+            {/* Ping only on larger screens */}
+            <div className="absolute inset-0 rounded-full border-2 border-green-400 opacity-20 animate-ping hidden sm:block"></div>
           </div>
+          <h2 className="text-4xl sm:text-5xl font-bold mt-4 bg-gradient-to-r from-green-300 via-blue-400 to-purple-500 bg-clip-text text-transparent drop-shadow-lg">
+            Balwant <span className="text-rose-500 text-6xl">Gupta</span>
+          </h2>
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 2 }}
-          >
-            <div
-              className="bg-black font-thin flex gap-x-3 
-    justify-center  flex-wrap mt-3 brightness-200 p-1
-     text-white"
+        <div className="grid md:grid-cols-2 gap-6 text-left text-sm px-2">
+          {[
+            {
+              title: "🎓 PGDCA (2023)",
+              detail: "CGPA: 7.73 — Mangalayatan University, Aligarh (U.P.)",
+              delay: 0.3,
+            },
+            {
+              title: "🎓 MCA (2025)",
+              detail: "SGPA: 7.61 — Asian International University, Manipur",
+              delay: 0.5,
+            },
+            {
+              title: "🧑‍💻 MERN Stack (2025)",
+              detail: "Procoderr.com — Certified Full Stack Developer",
+              delay: 0.7,
+              full: true,
+            },
+          ].map((item, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ delay: item.delay, duration: 0.8 }}
+              className={`bg-gradient-to-br from-[#1f1f1f] to-[#2a2a2a] border border-gray-700 p-6 rounded-2xl backdrop-blur-lg shadow-lg hover:shadow-rose-500/30 transition-all duration-300 ${
+                item.full ? "md:col-span-2" : ""
+              }`}
             >
-              <Link
-                to="/"
-                className="text-yellow-400 hover:scale-105 text-sm flex items-center font-serif"
-              >
-                Home{" "}
-              </Link>
-              <Link
-                to="/blog"
-                className="px-4  brightness-150   hover:scale-105 text-sm flex items-center font-serif"
-              >
-                Blog{" "}
-              </Link>
-
-              <Link
-                to="/chat"
-                className=" px-2  text-rose-900 text-sm font-serif 
-           flex items-center  
-           hover:scale-105"
-              >
-                Chat
-              </Link>
-            </div>
-          </motion.div>
-
-          <div class="bg-gray-950 mt-16  text-stone-400 italic">
-            <div class="container mx-auto text-center">
-              <p className="font-thin brightness-200">
-                &copy; 2025 Balwant portFolio. All rights reserved.
+              <p className="text-rose-400 font-semibold text-lg mb-1">
+                {item.title}
               </p>
-            </div>
+              <p className="text-green-300">{item.detail}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ y: 30, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="space-y-4"
+        >
+          <div className="flex justify-center items-center gap-4">
+            <MailIcon className="text-emerald-400 animate-pulse" />
+            <Link
+              to="mailto:balwant.programmer12@gmail.com"
+              className="bg-gradient-to-r from-pink-400 via-green-300 to-blue-400 bg-clip-text text-transparent font-medium hover:underline"
+            >
+              balwant.programmer12@gmail.com
+            </Link>
+          </div>
+          <div className="flex justify-center items-center gap-4">
+            <LocalPhoneIcon className="text-yellow-400 animate-pulse" />
+            <Link
+              to="tel:+7307872065"
+              className="bg-gradient-to-r from-yellow-400 via-red-400 to-pink-400 bg-clip-text text-transparent font-medium hover:underline"
+            >
+              +91 73078 72065
+            </Link>
           </div>
         </motion.div>
-      </div>
-    </>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="pt-8 flex flex-wrap justify-center gap-4"
+        >
+          <Link
+            to="/"
+            className="px-5 py-2 text-sm rounded-full border border-green-400 hover:bg-green-600 hover:text-white transition-all duration-300"
+          >
+            Home
+          </Link>
+          <Link
+            to="/blog"
+            className="px-5 py-2 text-sm rounded-full border border-pink-400 hover:bg-pink-600 hover:text-white transition-all duration-300"
+          >
+            Blog
+          </Link>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+          className="pt-10 pb-10 border-t border-gray-700 text-xs text-stone-400"
+        >
+          <p>&copy; 2025 Balwant Portfolio. All rights reserved.</p>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 };
 

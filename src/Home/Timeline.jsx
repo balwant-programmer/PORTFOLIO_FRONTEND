@@ -11,79 +11,94 @@ const Timeline = () => {
       year: "2025 - Present",
       title: "Pursuing MCA (2nd Year)",
       description:
-        "Currently pursuing my Master's in Computer Applications (MCA). I am deepening my knowledge in algorithms, data structures, and software engineering, preparing for advanced development projects.",
-      color: <LockOpenIcon style={{ color: "blue" }} />,
-      titleColor: "text-blue-500",
+        "Currently expanding my expertise in advanced computer science concepts, web development, and cutting-edge software engineering practices through my MCA program.",
+      color: <LockOpenIcon className="text-blue-500" />,
+      titleColor:
+        "bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 bg-clip-text text-transparent",
     },
     {
       year: "2025",
       title: "Completed MERN Stack Course",
       description:
-        "Successfully completed a MERN Stack (MongoDB, Express, React, Node.js) course. Built several full-stack applications with a focus on RESTful APIs, user authentication, and deploying web applications on cloud platforms.",
-      color: <CodeIcon style={{ color: "green" }} />,
-      titleColor: "text-green-500",
+        "Successfully built full-stack apps with MongoDB, Express, React, and Node.js. Gained strong skills in REST APIs, auth, and deployment.",
+      color: <CodeIcon className="text-green-400" />,
+      titleColor:
+        "bg-gradient-to-r from-green-300 via-teal-400 to-blue-500 bg-clip-text text-transparent",
     },
     {
       year: "2023",
       title: "Completed PGDCA",
       description:
-        "Completed PGDCA, where I gained foundational knowledge in computer applications, programming languages like C, C++, and the basics of web development",
-      color: <SchoolIcon style={{ color: "purple" }} />,
-      titleColor: "text-purple-500",
+        "Built fundamentals in C, C++, and web basics. This helped form a solid base for my transition to full-stack development.",
+      color: <SchoolIcon className="text-purple-400" />,
+      titleColor:
+        "bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent",
     },
     {
       year: "2022",
       title: "Started Learning Web Development",
       description:
-        "Started learning web development by mastering HTML, CSS, JavaScript, and React. I began building basic projects such as a personal portfolio and a e-commerce  app",
-      color: <WorkIcon style={{ color: "orange" }} />,
-      titleColor: "text-orange-500",
+        "Started my dev journey with HTML, CSS, JS, and React. Built portfolio & e-commerce projects, sparking my passion for frontend design.",
+      color: <WorkIcon className="text-orange-400" />,
+      titleColor:
+        "bg-gradient-to-r from-yellow-300 via-orange-500 to-pink-500 bg-clip-text text-transparent",
     },
   ];
 
   return (
-    <div className="max-w-4xl mx-auto mt-32 p-6 bg-gray-50 mb-10">
-      <div className="relative">
-        <h2 className="text-2xl font-serif text-center text-rose-600  mb-8">
-          Timeline
-        </h2>
-      </div>
-      <div className="relative border-l-4 border-gray-300">
-        {timelineData.map((item, index) => (
-          <motion.div
-            key={index}
-            className="mb-8 ml-6"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 2 }}
-          >
-            <div
-              className={`absolute -left-4 w-8 h-8 flex
-               justify-center items-center rounded-full 
-              shadow-green-500 shadow-lg bg-white   transition-shadow duration-300`}
+    <div className="max-w-6xl mx-auto px-6  mb-4">
+      <h2
+        className="text-center text-4xl font-bold font-poppins bg-gradient-to-r
+       from-rose-400 via-pink-500 to-yellow-400 bg-clip-text text-transparent mb-5"
+      >
+        My Learning Journey 🚀
+      </h2>
+
+      <div className="relative border-l-4 border-gray-700 pl-3">
+        {timelineData.map((item, index) => {
+          const isEven = index % 2 === 0;
+          return (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: isEven ? -20 : 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.2, delay: index * 0.2 }}
+              viewport={{ once: false }}
+              className="relative mb-16"
             >
-              {item.color}
-            </div>
-            <div className="flex flex-col md:flex-row items-start md:items-center">
-              <div className="md:w-1/4 text-right pr-6">
-                <p className="text-xs sm:text-sm text-gray-900 font-poppins">
-                  {item.year}
-                </p>
+              {/* Icon Circle */}
+              <div
+                className={`absolute w-10 h-10 rounded-full  bg-white shadow-xl border-2 flex items-center justify-center 
+                ${isEven ? "-left-[34px]" : "-left-[34px]"} 
+                border-indigo-500 animate-pulse`}
+              >
+                {item.color}
+              </div>
+
+              {/* Content Container */}
+              <div className="ml-4 ">
+                <div className="text-sm  mb-1 font-mono">{item.year}</div>
                 <h3
-                  className={`text-sm text-fuchsia-500 
-                   sm:text-xl md:text-2xl mb-1 font-serif ${item.titleColor}`}
+                  className={`text-xl md:text-2xl font-poppins mb-2 ${item.titleColor}`}
                 >
                   {item.title}
                 </h3>
+                <div
+                  className="px-1 sm:p-8 rounded-2xl bg-gradient-to-br font-poppins lg:w-[1000px] sm:[700px]
+                 from-gray-900 via-black to-blue-800"
+                >
+                  <p
+                    className="text-md md:text-3xl p-2 font-poppins leading-relaxed
+bg-gradient-to-r
+       from-gray-500 via-blue-500 to-purple-900 bg-clip-text text-transparent"
+                  >
+                    {item.description}
+                  </p>
+                </div>
               </div>
-              <div className="md:w-3/4">
-                <p className="text-sm sm:text-base md:text-lg text-gray-500 font-serif">
-                  {item.description}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );

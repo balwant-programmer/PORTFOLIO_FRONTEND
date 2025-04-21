@@ -10,7 +10,7 @@ export const Mernimage = [
     name: "express",
   },
   {
-    img: "/react-1.svg",
+    img: "rr.jpeg",
     title: "R",
     name: "react",
   },
